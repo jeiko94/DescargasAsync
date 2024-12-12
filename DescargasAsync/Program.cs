@@ -6,11 +6,17 @@
     {
         "https://www.google.com",
         "https://www.microsoft.com",
-        "https://www.github.com"
+        "https://www.github.com",
+        "https://www.facebook.com",
+        "https://www.apple.com"
     };
 
-        Console.WriteLine("Descargando paginas secuencialmente...");
+        Console.WriteLine("Descargando paginas en paralelo...");
+        await DescargaTodasEnParaleloAsync(urls);
+
+        Console.WriteLine("\nDescargando paginas secuencialmente...");
         await DescargarTodasSecuencialmenteAsync(urls);
+
     }
 
 
@@ -31,6 +37,18 @@
             int length = await DescargarPaginaAsync(url);
             Console.WriteLine($"{url}: {length} caracteres descargados.");
 
+        }
+    }
+
+    public static async Task DescargaTodasEnParaleloAsync(List<string> urls)
+    {
+        var tarea = urls.Select(url => DescargarPaginaAsync(url)).ToList();
+
+        int[] resultados = await Task.WhenAll(tarea);
+
+        for (int i = 0; i < urls.Count; i ++)
+        {
+            Console.WriteLine($"{urls[i]}: {resultados[i]} caracteres descargados.");
         }
     }
 }
